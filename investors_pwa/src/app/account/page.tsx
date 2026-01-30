@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import {
+  Banknote,
   ChevronRight,
   CreditCard,
   FileText,
   HelpCircle,
-  Leaf,
   LogOut,
   type LucideIcon,
 } from 'lucide-react';
@@ -60,7 +60,7 @@ export default async function AccountPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
-                <Leaf className="w-6 h-6 text-green-500" />
+                <Banknote className="w-6 h-6 text-green-500" />
               </div>
               <div>
                 <p className="text-sm text-gray-400">Green Credits Balance</p>
@@ -75,15 +75,11 @@ export default async function AccountPage() {
         </Card>
       </Link>
 
-      <div className="space-y-2">
-        <MenuItem icon={CreditCard} label="Payments" description="Manage payment methods" href="#" />
-        <MenuItem icon={HelpCircle} label="Support" description="Get help with your account" href="#" />
-        <MenuItem
-          icon={FileText}
-          label="Terms & Conditions"
-          description="Read our terms of service"
-          href="#"
-        />
+      {/* Menu items - Sleek fintech design with unified spine */}
+      <div className="bg-[#1C1C1E] rounded-sm overflow-hidden">
+        <MenuItemRow icon={CreditCard} label="Payments" description="Manage payment methods" href="#" />
+        <MenuItemRow icon={HelpCircle} label="Support" description="Get help with your account" href="#" hasBorder />
+        <MenuItemRow icon={FileText} label="Terms & Conditions" description="Read our terms of service" href="#" hasBorder />
       </div>
 
       <div className="mt-8">
@@ -96,29 +92,36 @@ export default async function AccountPage() {
   );
 }
 
-function MenuItem({
+function MenuItemRow({
   icon: Icon,
   label,
   description,
   href,
+  hasBorder = false,
 }: {
   icon: LucideIcon;
   label: string;
   description: string;
   href: string;
+  hasBorder?: boolean;
 }) {
   return (
     <Link href={href}>
-      <Card className="flex items-center gap-4 hover:bg-neutral-800 transition-colors">
-        <div className="w-10 h-10 bg-neutral-800 rounded-full flex items-center justify-center">
-          <Icon className="w-5 h-5 text-gray-400" />
+      <div
+        className={`flex items-center gap-5 px-5 py-5 hover:bg-[#262626] transition-colors ${hasBorder ? 'border-t border-[#333333]' : ''
+          }`}
+      >
+        {/* Icon with spark glow effect */}
+        <div className="relative w-10 h-10 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full blur-xl opacity-10 bg-gray-500" />
+          <Icon className="w-5 h-5 text-gray-400 relative z-10" />
         </div>
-        <div className="flex-1">
-          <p className="font-medium">{label}</p>
-          <p className="text-sm text-gray-500">{description}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-[15px] font-medium text-white">{label}</p>
+          <p className="text-[13px] text-[#9B9B9B]">{description}</p>
         </div>
-        <ChevronRight className="w-5 h-5 text-gray-500" />
-      </Card>
+        <ChevronRight className="w-5 h-5 text-[#9B9B9B]" />
+      </div>
     </Link>
   );
 }

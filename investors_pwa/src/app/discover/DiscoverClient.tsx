@@ -88,24 +88,29 @@ export function DiscoverClient() {
 
   return (
     <div className="p-4">
-      <div className="flex gap-6 mb-6">
+      {/* Tab Header - Zerodha Style */}
+      <div className="flex gap-8 mb-6">
         <button
           type="button"
           onClick={() => setActiveTab('explore')}
-          className={`pb-2 font-medium ${
-            activeTab === 'explore' ? 'text-white border-b-2 border-blue-500' : 'text-gray-500'
-          }`}
+          className={`relative pb-3 text-[15px] font-medium transition-colors ${activeTab === 'explore' ? 'text-white' : 'text-[#9B9B9B] hover:text-gray-400'
+            }`}
         >
           Explore
+          {activeTab === 'explore' && (
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-blue-500 rounded-sm" />
+          )}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('watchlist')}
-          className={`pb-2 font-medium ${
-            activeTab === 'watchlist' ? 'text-white border-b-2 border-blue-500' : 'text-gray-500'
-          }`}
+          className={`relative pb-3 text-[15px] font-medium transition-colors ${activeTab === 'watchlist' ? 'text-white' : 'text-[#9B9B9B] hover:text-gray-400'
+            }`}
         >
           Watchlist
+          {activeTab === 'watchlist' && (
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-blue-500 rounded-sm" />
+          )}
         </button>
       </div>
 
@@ -129,11 +134,10 @@ export function DiscoverClient() {
                     key={value}
                     type="button"
                     onClick={() => setMaxMinInvestment(value)}
-                    className={`px-3 py-2 rounded-full border text-sm ${
-                      maxMinInvestment === value
+                    className={`px-3 py-2 rounded-full border text-sm ${maxMinInvestment === value
                         ? 'bg-blue-600 border-blue-600 text-white'
                         : 'border-neutral-700 text-gray-200'
-                    }`}
+                      }`}
                   >
                     ₹{value.toLocaleString('en-IN')}
                   </button>
@@ -141,11 +145,10 @@ export function DiscoverClient() {
                 <button
                   type="button"
                   onClick={() => setMaxMinInvestment(null)}
-                  className={`px-3 py-2 rounded-full border text-sm ${
-                    maxMinInvestment === null
+                  className={`px-3 py-2 rounded-full border text-sm ${maxMinInvestment === null
                       ? 'bg-blue-600 border-blue-600 text-white'
                       : 'border-neutral-700 text-gray-200'
-                  }`}
+                    }`}
                 >
                   Any
                 </button>

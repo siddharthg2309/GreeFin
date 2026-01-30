@@ -86,22 +86,25 @@ export default function InvestmentsPage() {
 
   return (
     <div className="p-4">
-      <div className="flex items-center gap-8 -mx-4 px-4 py-3 mb-6 bg-[#262626] border-b border-[#333333]">
+      {/* Tab Header - Sharp Level Style */}
+      <div className="flex items-center justify-center gap-16 -mx-4 px-5 py-4 mb-6 bg-[#262626] border-b border-[#333333]">
         {(['portfolio', 'sips', 'orders'] as const).map((tab) => (
           <button
             key={tab}
             type="button"
             onClick={() => {
-              // Prevent rendering the previous tab's data under the new tab before fetch completes.
               setLoading(true);
               setData([]);
               setActiveTab(tab);
             }}
-            className={`pb-2 font-medium capitalize transition-colors ${
-              activeTab === tab ? 'text-white border-b-2 border-blue-500' : 'text-[#9B9B9B] hover:text-gray-400'
-            }`}
+            className={`relative pb-3 text-[15px] font-medium capitalize transition-colors ${activeTab === tab ? 'text-white' : 'text-[#9B9B9B] hover:text-gray-400'
+              }`}
           >
             {tab === 'sips' ? 'SIPs' : tab}
+            {/* Active indicator - centered blue bar */}
+            {activeTab === tab && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-blue-500 rounded-sm" />
+            )}
           </button>
         ))}
       </div>
@@ -145,9 +148,8 @@ function PortfolioList({ holdings }: { holdings: PortfolioHolding[] }) {
       {holdings.map((item, index) => (
         <div
           key={item.id}
-          className={`flex items-center gap-4 bg-[#262626] px-5 py-4 rounded-sm ${
-            index !== holdings.length - 1 ? 'border-b border-[#333333]' : ''
-          }`}
+          className={`flex items-center gap-4 bg-[#262626] px-5 py-4 rounded-sm ${index !== holdings.length - 1 ? 'border-b border-[#333333]' : ''
+            }`}
         >
           <IconWrapper
             icon={Briefcase}
@@ -193,9 +195,8 @@ function SipsList({ sips, onUpdate }: { sips: SipEntry[]; onUpdate: () => void }
       {sips.map(({ sip, fund }, index) => (
         <div
           key={sip.id}
-          className={`flex items-center gap-4 bg-[#262626] px-5 py-4 rounded-sm ${
-            index !== sips.length - 1 ? 'border-b border-[#333333]' : ''
-          }`}
+          className={`flex items-center gap-4 bg-[#262626] px-5 py-4 rounded-sm ${index !== sips.length - 1 ? 'border-b border-[#333333]' : ''
+            }`}
         >
           <IconWrapper
             icon={Repeat}
@@ -208,13 +209,12 @@ function SipsList({ sips, onUpdate }: { sips: SipEntry[]; onUpdate: () => void }
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-[15px] font-semibold text-white truncate">{fund.name}</h3>
               <span
-                className={`text-[11px] px-2 py-1 rounded-sm ${
-                  sip.status === 'ACTIVE'
+                className={`text-[11px] px-2 py-1 rounded-sm ${sip.status === 'ACTIVE'
                     ? 'bg-green-500/20 text-green-500'
                     : sip.status === 'PAUSED'
                       ? 'bg-yellow-500/20 text-yellow-500'
                       : 'bg-red-500/20 text-red-500'
-                }`}
+                  }`}
               >
                 {sip.status}
               </span>
@@ -256,9 +256,8 @@ function OrdersList({ orders }: { orders: OrderEntry[] }) {
       {orders.map(({ order, fund }, index) => (
         <div
           key={order.id}
-          className={`flex items-center gap-4 bg-[#262626] px-5 py-4 rounded-sm ${
-            index !== orders.length - 1 ? 'border-b border-[#333333]' : ''
-          }`}
+          className={`flex items-center gap-4 bg-[#262626] px-5 py-4 rounded-sm ${index !== orders.length - 1 ? 'border-b border-[#333333]' : ''
+            }`}
         >
           <IconWrapper
             icon={ClipboardList}
@@ -271,13 +270,12 @@ function OrdersList({ orders }: { orders: OrderEntry[] }) {
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-[15px] font-semibold text-white truncate">{fund.name}</h3>
               <span
-                className={`text-[11px] px-2 py-1 rounded-sm ${
-                  order.status === 'COMPLETED'
+                className={`text-[11px] px-2 py-1 rounded-sm ${order.status === 'COMPLETED'
                     ? 'bg-green-500/20 text-green-500'
                     : order.status === 'PENDING'
                       ? 'bg-yellow-500/20 text-yellow-500'
                       : 'bg-red-500/20 text-red-500'
-                }`}
+                  }`}
               >
                 {order.status}
               </span>
