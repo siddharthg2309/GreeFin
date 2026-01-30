@@ -24,3 +24,26 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+node_modules
+.next
+out
+coverage
+
+# next-pwa build output
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+
+# env files
+.env
+.env.local
+.env.*.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# misc
+.DS_Store
