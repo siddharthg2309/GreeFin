@@ -76,11 +76,11 @@ cd Chennai-Sharks_9.20_SDG-9/investors_pwa
 npm install
 
 # Set up environment variables
-cp .env.example .env.local
-# Add your DATABASE_URL, CLERK_* keys
+cp .env.example .env
+# Add your DATABASE_URL (ask a teammate for the connection string)
 
-# Run database migrations
-npm run db:migrate
+# Push database schema
+npm run db:push
 
 # Start development server
 npm run dev
