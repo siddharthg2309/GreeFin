@@ -45,8 +45,10 @@ export function ExploreCarousel() {
       const scrollLeft = container.scrollLeft;
       const cardWidth = container.offsetWidth * 0.7;
       const gap = 16;
-      const index = Math.round(scrollLeft / (cardWidth + gap));
-      setActiveIndex(Math.min(index, categories.length - 1));
+      const totalCardWidth = cardWidth + gap;
+      // Use floor with a small threshold to improve snapping detection
+      const index = Math.round((scrollLeft + totalCardWidth / 3) / totalCardWidth);
+      setActiveIndex(Math.max(0, Math.min(index, categories.length - 1)));
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
@@ -104,9 +106,8 @@ export function ExploreCarousel() {
             key={index}
             type="button"
             onClick={() => scrollToCard(index)}
-            className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-              index === activeIndex ? 'bg-blue-500' : 'bg-neutral-600'
-            }`}
+            className={`w-2 h-2 rounded-full transition-colors duration-200 ${index === activeIndex ? 'bg-blue-500' : 'bg-neutral-600'
+              }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
