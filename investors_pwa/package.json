@@ -14,6 +14,8 @@
     "db:seed": "tsx --tsconfig tsconfig.json src/db/seed.ts"
   },
   "dependencies": {
+    "@langchain/core": "1.1.17",
+    "@langchain/openai": "1.2.3",
     "@neondatabase/serverless": "1.0.2",
     "clsx": "2.1.1",
     "drizzle-orm": "0.45.1",
