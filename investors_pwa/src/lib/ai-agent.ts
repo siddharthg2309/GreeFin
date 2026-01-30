@@ -62,6 +62,7 @@ function getOpenRouterConfig() {
     model: process.env.OPENROUTER_MODEL || 'gpt-4o-mini',
     appUrl: process.env.OPENROUTER_APP_URL || 'http://localhost:3000',
     appName: process.env.OPENROUTER_APP_NAME || 'GreenFin Investors PWA',
+    timeoutMs: Number.parseInt(process.env.OPENROUTER_TIMEOUT_MS || '12000', 10),
   };
 }
 
@@ -205,24 +206,33 @@ export async function verifyGreenProduct(input: VerificationInput): Promise<Veri
   const userPrompt = buildUserPrompt(input);
 
   try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': config.appUrl,
-        'X-Title': config.appName,
-      },
-      body: JSON.stringify({
-        model: config.model,
-        temperature: 0,
-        max_tokens: 500,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-      }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), config.timeoutMs);
+
+    let response: Response;
+    try {
+      response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${config.apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': config.appUrl,
+          'X-Title': config.appName,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: config.model,
+          temperature: 0,
+          max_tokens: 500,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+        }),
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       throw new Error(`OpenRouter request failed: ${response.status}`);

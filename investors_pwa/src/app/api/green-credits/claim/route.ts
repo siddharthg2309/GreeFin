@@ -45,10 +45,23 @@ export async function POST(request: Request) {
 
     let invoiceText: string | undefined;
     if (file && file.size > 0) {
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (!isPdf) {
+        return NextResponse.json(
+          { success: false, error: 'Only PDF invoices are accepted.' },
+          { status: 400 }
+        );
+      }
+
       try {
         invoiceText = await extractTextFromFile(file);
+        if (!invoiceText || invoiceText.trim().length === 0) {
+          console.warn('PDF text extraction returned empty text; continuing without invoice text.');
+          invoiceText = undefined;
+        }
       } catch (ocrError) {
         console.error('OCR extraction failed:', ocrError);
+        invoiceText = undefined;
       }
     }
 

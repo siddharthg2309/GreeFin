@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   CheckCircle,
   FileText,
-  Image as ImageIcon,
   Leaf,
   Loader2,
   Upload,
@@ -76,8 +75,25 @@ export default function ClaimCreditsPage() {
   const getFileIcon = () => {
     if (!file) return Upload;
     if (file.type === 'application/pdf') return FileText;
-    if (file.type.startsWith('image/')) return ImageIcon;
     return FileText;
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0] || null;
+    if (!selected) {
+      setFile(null);
+      return;
+    }
+
+    const isPdf = selected.type === 'application/pdf' || selected.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      alert('Please upload a PDF invoice only.');
+      e.currentTarget.value = '';
+      setFile(null);
+      return;
+    }
+
+    setFile(selected);
   };
 
   async function handleSubmit(e: React.FormEvent) {
@@ -167,7 +183,7 @@ export default function ClaimCreditsPage() {
           </li>
           <li className="flex gap-2">
             <span className="text-blue-500 font-medium">2.</span>
-            Upload invoice or receipt (optional, but helps verification)
+            Upload invoice (PDF only, optional but recommended)
           </li>
           <li className="flex gap-2">
             <span className="text-blue-500 font-medium">3.</span>
@@ -216,7 +232,7 @@ export default function ClaimCreditsPage() {
           </div>
 
           <div>
-            <label className="text-sm text-gray-400 block mb-2">Upload Invoice (Optional)</label>
+            <label className="text-sm text-gray-400 block mb-2">Upload Invoice (PDF only)</label>
             <label
               className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-lg p-6 cursor-pointer transition-colors ${
                 file ? 'border-green-600 bg-green-900/20' : 'border-neutral-700 hover:border-neutral-600'
@@ -224,19 +240,19 @@ export default function ClaimCreditsPage() {
             >
               <FileIcon className={`w-8 h-8 ${file ? 'text-green-500' : 'text-gray-500'}`} />
               <span className={`text-sm ${file ? 'text-green-400' : 'text-gray-500'}`}>
-                {file ? file.name : 'Click to upload PDF or Image'}
+                {file ? file.name : 'Click to upload PDF invoice'}
               </span>
               {file && <span className="text-xs text-gray-600">{(file.size / 1024).toFixed(1)} KB</span>}
               <input
                 type="file"
                 className="hidden"
-                accept="image/*,.pdf"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                accept=".pdf,application/pdf"
+                onChange={handleFileChange}
                 disabled={loading}
               />
             </label>
             <p className="text-xs text-gray-600 mt-1">
-              Supported: PDF, PNG, JPG (invoice helps verify your claim faster)
+              Supported: PDF only
             </p>
           </div>
 
