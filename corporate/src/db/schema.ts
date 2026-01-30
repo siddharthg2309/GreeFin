@@ -10,6 +10,9 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
+// ============================================
+// EXISTING ENUMS (from investors_pwa)
+// ============================================
 export const fundTypeEnum = pgEnum('fund_type', ['GREEN_BOND', 'INVIT', 'GREEN_FUND']);
 export const orderTypeEnum = pgEnum('order_type', ['BUY', 'SELL']);
 export const orderStatusEnum = pgEnum('order_status', ['PENDING', 'COMPLETED', 'FAILED', 'CANCELLED']);
@@ -17,9 +20,15 @@ export const sipFrequencyEnum = pgEnum('sip_frequency', ['WEEKLY', 'MONTHLY']);
 export const sipStatusEnum = pgEnum('sip_status', ['ACTIVE', 'PAUSED', 'CANCELLED']);
 export const claimStatusEnum = pgEnum('claim_status', ['PENDING', 'APPROVED', 'REJECTED']);
 
+// ============================================
+// NEW ENUMS (for corporate portal)
+// ============================================
 export const csrStatusEnum = pgEnum('csr_status', ['ACTIVE', 'EXHAUSTED', 'PAUSED']);
 export const issuerTypeEnum = pgEnum('issuer_type', ['CORPORATE', 'GOVERNMENT', 'NGO']);
 
+// ============================================
+// NEW TABLE: CORPORATES
+// ============================================
 export const corporates = pgTable('corporates', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
@@ -33,6 +42,9 @@ export const corporates = pgTable('corporates', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// ============================================
+// EXISTING TABLE: USERS (unchanged)
+// ============================================
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
@@ -43,6 +55,9 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// ============================================
+// UPDATED TABLE: FUNDS (with issuer reference)
+// ============================================
 export const funds = pgTable('funds', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
@@ -64,6 +79,9 @@ export const funds = pgTable('funds', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// ============================================
+// NEW TABLE: ESG REPORTS
+// ============================================
 export const esgReports = pgTable('esg_reports', {
   id: uuid('id').defaultRandom().primaryKey(),
   fundId: uuid('fund_id')
@@ -79,6 +97,9 @@ export const esgReports = pgTable('esg_reports', {
   uploadedAt: timestamp('uploaded_at').defaultNow(),
 });
 
+// ============================================
+// NEW TABLE: CSR FUNDINGS
+// ============================================
 export const csrFundings = pgTable('csr_fundings', {
   id: uuid('id').defaultRandom().primaryKey(),
   corporateId: uuid('corporate_id')
@@ -93,6 +114,9 @@ export const csrFundings = pgTable('csr_fundings', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// ============================================
+// EXISTING TABLES (unchanged)
+// ============================================
 export const holdings = pgTable('holdings', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id')
@@ -154,6 +178,9 @@ export const watchlist = pgTable('watchlist', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// ============================================
+// UPDATED TABLE: GREEN CREDIT CLAIMS (with CSR reference)
+// ============================================
 export const greenCreditClaims = pgTable('green_credit_claims', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id')
@@ -183,6 +210,9 @@ export const impactMetrics = pgTable('impact_metrics', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// ============================================
+// TYPE EXPORTS
+// ============================================
 export type Corporate = typeof corporates.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type Fund = typeof funds.$inferSelect;
@@ -194,3 +224,4 @@ export type GreenCreditClaim = typeof greenCreditClaims.$inferSelect;
 export type ImpactMetric = typeof impactMetrics.$inferSelect;
 export type EsgReport = typeof esgReports.$inferSelect;
 export type CsrFunding = typeof csrFundings.$inferSelect;
+
