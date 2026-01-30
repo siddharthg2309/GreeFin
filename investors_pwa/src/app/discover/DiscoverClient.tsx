@@ -1,24 +1,36 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { X } from 'lucide-react';
 
 import type { Fund } from '@/db/schema';
 import { FundCard } from '@/components/discover/FundCard';
 import { FundTypeGrid } from '@/components/discover/FundTypeGrid';
 import { SearchBar } from '@/components/discover/SearchBar';
+import { Button } from '@/components/ui/Button';
 
 export function DiscoverClient() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const query = searchParams.get('q');
   const type = searchParams.get('type');
+  const minInvestmentParam = searchParams.get('minInvestment');
 
   const [funds, setFunds] = useState<Fund[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'explore' | 'watchlist'>('explore');
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [maxMinInvestment, setMaxMinInvestment] = useState<number | null>(
+    minInvestmentParam ? Number(minInvestmentParam) : null
+  );
 
   useEffect(() => {
-    if (!query && !type) {
+    setMaxMinInvestment(minInvestmentParam ? Number(minInvestmentParam) : null);
+  }, [minInvestmentParam]);
+
+  useEffect(() => {
+    if (!query && !type && !minInvestmentParam) {
       setFunds([]);
       setLoading(false);
       return;
@@ -32,6 +44,7 @@ export function DiscoverClient() {
         const params = new URLSearchParams();
         if (query) params.set('q', query);
         if (type) params.set('type', type);
+        if (minInvestmentParam) params.set('minInvestment', minInvestmentParam);
 
         const res = await fetch(`/api/funds?${params}`, { signal: controller.signal });
         const data: { success: boolean; data: Fund[] } = await res.json();
@@ -48,9 +61,30 @@ export function DiscoverClient() {
     })();
 
     return () => controller.abort();
-  }, [query, type]);
+  }, [query, type, minInvestmentParam]);
 
-  const showResults = Boolean(query || type);
+  const showResults = Boolean(query || type || minInvestmentParam);
+
+  const applyFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (maxMinInvestment) {
+      params.set('minInvestment', String(maxMinInvestment));
+    } else {
+      params.delete('minInvestment');
+    }
+    const qs = params.toString();
+    router.push(qs ? `/discover?${qs}` : '/discover');
+    setFilterOpen(false);
+  };
+
+  const clearFilters = () => {
+    setMaxMinInvestment(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('minInvestment');
+    const qs = params.toString();
+    router.push(qs ? `/discover?${qs}` : '/discover');
+    setFilterOpen(false);
+  };
 
   return (
     <div className="p-4">
@@ -75,7 +109,61 @@ export function DiscoverClient() {
         </button>
       </div>
 
-      <SearchBar defaultValue={query || ''} onFilterClick={() => {}} />
+      <SearchBar defaultValue={query || ''} onFilterClick={() => setFilterOpen(true)} />
+
+      {filterOpen && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-end">
+          <div className="bg-gray-900 w-full rounded-t-3xl p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold">Filters</h2>
+              <button type="button" onClick={() => setFilterOpen(false)} className="p-2" aria-label="Close filters">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-sm text-gray-500 mb-3">Max minimum investment</p>
+              <div className="flex flex-wrap gap-2">
+                {[500, 1000, 5000, 10000].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setMaxMinInvestment(value)}
+                    className={`px-3 py-2 rounded-full border text-sm ${
+                      maxMinInvestment === value
+                        ? 'bg-blue-600 border-blue-600 text-white'
+                        : 'border-gray-700 text-gray-200'
+                    }`}
+                  >
+                    ₹{value.toLocaleString('en-IN')}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setMaxMinInvestment(null)}
+                  className={`px-3 py-2 rounded-full border text-sm ${
+                    maxMinInvestment === null ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-700 text-gray-200'
+                  }`}
+                >
+                  Any
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-3">
+                {maxMinInvestment ? `Showing funds with min investment ≤ ₹${maxMinInvestment.toLocaleString('en-IN')}` : 'No min investment filter'}
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Button variant="secondary" className="flex-1" onClick={clearFilters}>
+                Clear
+              </Button>
+              <Button className="flex-1" onClick={applyFilters}>
+                Apply
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-6">
         {activeTab === 'explore' ? (
@@ -84,6 +172,7 @@ export function DiscoverClient() {
               <p className="text-sm text-gray-500 mb-4">
                 {funds.length} results
                 {type && ` for ${type.replace('_', ' ').toLowerCase()}`}
+                {minInvestmentParam && ` • min ≤ ₹${Number(minInvestmentParam).toLocaleString('en-IN')}`}
               </p>
 
               {loading ? (
@@ -155,4 +244,3 @@ function WatchlistSection() {
     </div>
   );
 }
-
