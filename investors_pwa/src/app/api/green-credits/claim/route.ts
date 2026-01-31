@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
+import { and, eq, gt } from 'drizzle-orm';
 
-import { greenCreditClaims, users } from '@/db/schema';
+import { csrFundings, greenCreditClaims, users } from '@/db/schema';
 import { db } from '@/lib/db';
 import { getCurrentUserId } from '@/lib/mock-user';
 import { verifyGreenProduct } from '@/lib/ai-agent';
@@ -107,6 +107,33 @@ export async function POST(request: Request) {
       };
     }
 
+    let csrFundingId: string | null = null;
+    if (isApproved && creditsToRedeem > 0) {
+      const [csrFunding] = await db
+        .select({
+          id: csrFundings.id,
+          remainingAmount: csrFundings.remainingAmount,
+        })
+        .from(csrFundings)
+        .where(and(eq(csrFundings.status, 'ACTIVE'), gt(csrFundings.remainingAmount, '0')))
+        .limit(1);
+
+      if (csrFunding) {
+        const newRemaining = Number.parseFloat(csrFunding.remainingAmount) - creditsToRedeem;
+
+        await db
+          .update(csrFundings)
+          .set({
+            remainingAmount: Math.max(0, newRemaining).toString(),
+            status: newRemaining <= 0 ? 'EXHAUSTED' : 'ACTIVE',
+            updatedAt: new Date(),
+          })
+          .where(eq(csrFundings.id, csrFunding.id));
+
+        csrFundingId = csrFunding.id;
+      }
+    }
+
     await db
       .update(greenCreditClaims)
       .set({
@@ -118,6 +145,7 @@ export async function POST(request: Request) {
         }),
         isApproved,
         creditsRedeemed: creditsToRedeem.toString(),
+        csrFundingId,
         status: isApproved ? 'APPROVED' : 'REJECTED',
         processedAt: new Date(),
       })
