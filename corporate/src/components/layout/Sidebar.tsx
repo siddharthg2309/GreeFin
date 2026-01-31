@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  BarChart3,
   FileText,
   LayoutDashboard,
-  Leaf,
   Settings,
   TrendingUp,
   Wallet,
@@ -40,7 +40,7 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-black border-r border-[#2C2C2E] flex flex-col">
       <div className="p-6 border-b border-[#2C2C2E]">
         <Link href="/" className="flex items-center gap-2">
-          <Leaf className="w-6 h-6 text-green-500" />
+          <BarChart3 className="w-6 h-6 text-green-500" />
           <span className="text-lg font-semibold text-white">GreenFin</span>
           <span className="text-xs text-[#8E8E93] ml-1">Corporate</span>
         </Link>
