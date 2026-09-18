@@ -6,7 +6,7 @@ GreeFin is a sustainable-finance platform that connects everyday investors with 
 
 The project supports **UN Sustainable Development Goal 9: Industry, Innovation and Infrastructure** by widening access to sustainable infrastructure financing.
 
-[Investor demo](https://greefin.vercel.app/) · Built by **Chennai Sharks** for the iQOO Hackathon, Reskill Chennai
+[Investor demo](https://greefin.vercel.app/) ·
 
 ## The problem
 
